@@ -1,3 +1,7 @@
+function isManchuScript(str) {
+return /(([\u1800-\u18AA\u00AB\u00BB\u2039\u203A\?\!\u203D\u2E2E])+\s*((-*—?[0-9])+\s+)*)+$/.test(str);
+}
+
 function Manchurize(str) {
   var tmp = "";
   if (str.length > 0) {
