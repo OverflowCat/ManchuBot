@@ -1,5 +1,122 @@
 function isManchuScript(str) {
-return (/(([\u1800-\u18AA\u00AB\u00BB\u2039\u203A\?\!\u203D\u2E2E])+\s*((-*—?[0-9])+\s+)*)+$/.test(str));
+  return (/(([\u1800-\u18AA\u00AB\u00BB\u2039\u203A\?\!\u203D\u2E2E])+\s*((-*—?[0-9])+\s+)*)+$/.test(str));
+}
+
+function deManchurize(str) {
+  var tmp = "";
+  if (str.length > 0) {
+    for (var i = 0; i < str.length; i++) {
+      var val = str.charAt(i);
+      var prev = " ";
+      if (i > 0) {
+        prev = str.charAt(i - 1);
+      }
+      if (val == "ᠠ") {
+        tmp += "a";
+      } else if (val == "ᡝ") {
+        tmp += "e";
+      } else if (val == "ᡳ") {
+        tmp += "i";
+      } else if (val == "ᠣ") {
+        tmp += "o";
+      } else if (val == "ᡠ") {
+        tmp += "u";
+      } else if (val == "ᡡ") {
+        tmp += "v";
+      } else if (val == "@") {
+        tmp += "ᡡ";
+      } else if (val == "ᠨ") {
+        tmp += "n";
+      } else if (val == "ᠩ") {
+        tmp += "N";
+      } else if (val == "ᠪ") {
+        tmp += "b";
+      } else if (val == "ᡦ") {
+        tmp += "p";
+      } else if (val == "ᡧ") {
+        tmp += "x";
+      } else if (val == "ᡧ") {
+        tmp += "S";
+      } else if (val == "ᡴ") {
+        tmp += "k";
+      } else if (val == "ᡤ" || val == "ᠩ") {
+        /*       if (prev == "ᠨ" || prev == "n") {
+          tmp = tmp.substring(0, tmp.length - 1);
+          tmp += "ᠩ";
+        } else {
+          tmp += "ᡤ";
+        }
+        */
+        tmp += "g";
+      } else if (val == "ᡥ") {
+        tmp += "h";
+      } else if (val == "ᠮ") {
+        tmp += "m";
+      } else if (val == "ᠯ") {
+        tmp += "l";
+      } else if (val == "ᡨ") {
+        tmp += "t";
+      } else if (val == "ᡩ") {
+        tmp += "d";
+      } else if (val == "ᠰ" || val == "ᡮ") {
+/*        if (prev == "ᡨ" || prev == "t") {
+          tmp = tmp.substring(0, tmp.length - 1);
+          tmp += "ᡮ";
+        } else {
+          tmp += "ᠰ";
+        }
+*/
+        tmp += "ᠰ";
+      } else if (val == "ᠴ") {
+        tmp += "c";
+      } else if (val == "ᠵ") {
+        tmp += "j";
+      } else if (val == "ᠶ") {
+        tmp += "y";
+      } else if (val == "ᡵ") {
+        tmp += "r";
+      } else if (val == "ᠸ") {
+        tmp += "w";
+      } else if (val == "ᡶ") {
+        tmp += "f";
+      } else if (val == "ᠺ") {
+        tmp += "K";
+      } else if (val == "ᡬ") {
+        tmp += "G";
+      } else if (val == "ᡭ") {
+        tmp += "H";
+      } else if (val == "ᡷ") {
+        tmp += "J";
+      } else if (val == "ᡱ") {
+        tmp += "C";
+      } else if (val == "ᡰ") {
+        tmp += "R";
+      } else if (val == "ᡯ") { // "z") {
+        /* if (prev == "ᡩ" || prev == "d") {
+        tmp = tmp.substring(0, tmp.length - 1);
+        tmp += "z";
+        } else {
+        */
+        tmp += "z";
+        //}
+      } else if (val == "'") {
+        tmp += "\u180B";
+      } else if (val == "\u180C") {
+        tmp += "\\";
+      } else if (val == "\u180D") {
+        tmp += "`";
+      } else if (val == "\u180E") {
+        tmp += "_";
+      } else if (val == "\u202F") {
+        tmp += "-";
+      } else if (val == "\u200D") {
+        tmp += "*";
+      } else {
+        tmp += val;
+      }
+    }
+  }
+  return tmp;
 }
 
 function Manchurize(str) {
@@ -116,54 +233,56 @@ function Manchurize(str) {
 
 
 function doPost(e) {
-    var estringa = JSON.parse(e.postData.contents);
-    var payload = identificar(estringa);
-    var data = {
-      "method": "post",
-      "payload": payload
-    }
-    var tgBotkey = "9********:AAFuK-ManchuNiyalma de tusa ara";
-    var rtn = JSON.parse(UrlFetchApp.fetch("https://api.telegram.org/bot" + tgBotkey + "/", data));
+  var estringa = JSON.parse(e.postData.contents);
+  var payload = identificar(estringa);
+  var data = {
+    "method": "post",
+    "payload": payload
+  }
+  var tgBotkey = "913536936:AAFuK-Wtrpv3y0ZTuItUAelyQXIYtAQ1pE8";
+  //https://api.telegram.org/bot913536936:AAFuK-Wtrpv3y0ZTuItUAelyQXIYtAQ1pE8/setwebhook?url=https://script.google.com/macros/s/AKfycbwbB8KVoFnIHaSGbwpcGoNqGP84e2rkqUvVnhRp1QZp-1ZlDw/exec
+  var rtn = JSON.parse(UrlFetchApp.fetch("https://api.telegram.org/bot" + tgBotkey + "/", data));
 
-    //debug
-    var payload = {
-      "method": "sendMessage",
-      "chat_ID": "405582582",
-      "text": "DEBUG" // + e.postData.contents.toString()
-    }
+  //debug
+  var payload = {
+    "method": "sendMessage",
+    "chat_ID": "405582582",
+    "text": "DEBUG" // + e.postData.contents.toString()
+  }
 
 
-    function identificar(e) {
-      cid = e.message.chat.id;
-      if (e.message.text) {
+  function identificar(e) {
+    cid = e.message.chat.id;
+    if (e.message.text) {
 
-        var mensaje = {
-          "method": "sendMessage",
-          "parse_mode": "HTML",
-          "chat_id": cid,
-          "text": Manchurize(e.message.text)
-        }
-      } else if (e.message.sticker) {
-        var mensaje = {
-          "method": "sendSticker",
-          "chat_id": e.message.chat.id,
-          "sticker": 'CAADBQADCgIAAgsiPA6YQhC2cRBPowI' //e.message.sticker.file_id
-        }
-      } else if (e.message.photo) {
-        var array = e.message.photo;
-        var text = array[1];
-        var mensaje = {
-          "method": "sendPhoto",
-          "chat_id": e.message.chat.id,
-          "photo": text.file_id
-        }
-      } else {
-        var mensaje = {
-          "method": "sendMessage",
-          "chat_id": e.message.chat.id,
-          "text": "Send me Manchu gisun plz - -"
-        }
+      var mensaje = {
+        "method": "sendMessage",
+        "parse_mode": "HTML",
+        "chat_id": cid,
+        "text": Manchurize(e.message.text)
       }
-
-      return mensaje;
+    } else if (e.message.sticker) {
+      var mensaje = {
+        "method": "sendSticker",
+        "chat_id": e.message.chat.id,
+        "sticker": 'CAADBQADCgIAAgsiPA6YQhC2cRBPowI' //e.message.sticker.file_id
+      }
+    } else if (e.message.photo) {
+      var array = e.message.photo;
+      var text = array[1];
+      var mensaje = {
+        "method": "sendPhoto",
+        "chat_id": e.message.chat.id,
+        "photo": text.file_id
+      }
+    } else {
+      var mensaje = {
+        "method": "sendMessage",
+        "chat_id": e.message.chat.id,
+        "text": "Send me Manchu gisun plz - -"
+      }
     }
+
+    return mensaje;
+  }
+}
