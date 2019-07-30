@@ -1,3 +1,7 @@
+//env properties
+var scriptProperties = PropertiesService.getScriptProperties();
+var keys = scriptProperties.getKeys();
+
 function isManchuScript(str) {
   return (/(([\u1800-\u18AA\u00AB\u00BB\u2039\u203A\?\!\u203D\u2E2E])+\s*((-*—?[0-9])+\s+)*)+$/.test(str));
 }
@@ -59,14 +63,14 @@ function deManchurize(str) {
       } else if (val == "ᡩ") {
         tmp += "d";
       } else if (val == "ᠰ" || val == "ᡮ") {
-/*        if (prev == "ᡨ" || prev == "t") {
+        /*        if (prev == "ᡨ" || prev == "t") {
           tmp = tmp.substring(0, tmp.length - 1);
           tmp += "ᡮ";
         } else {
           tmp += "ᠰ";
         }
 */
-        tmp += "ᠰ";
+        tmp += "s";
       } else if (val == "ᠴ") {
         tmp += "c";
       } else if (val == "ᠵ") {
@@ -231,7 +235,6 @@ function Manchurize(str) {
   return tmp;
 }
 
-
 function doPost(e) {
   var estringa = JSON.parse(e.postData.contents);
   var payload = identificar(estringa);
@@ -239,9 +242,7 @@ function doPost(e) {
     "method": "post",
     "payload": payload
   }
-  var tgBotkey = "913536936:AAFuK-Wtrpv3y0ZTuItUAelyQXIYtAQ1pE8";
-  //https://api.telegram.org/bot913536936:AAFuK-Wtrpv3y0ZTuItUAelyQXIYtAQ1pE8/setwebhook?url=https://script.google.com/macros/s/AKfycbwbB8KVoFnIHaSGbwpcGoNqGP84e2rkqUvVnhRp1QZp-1ZlDw/exec
-  var rtn = JSON.parse(UrlFetchApp.fetch("https://api.telegram.org/bot" + tgBotkey + "/", data));
+  var rtn = JSON.parse(UrlFetchApp.fetch("https://api.telegram.org/bot" + keys.tgbot + "/", data));
 
   //debug
   var payload = {
@@ -254,12 +255,31 @@ function doPost(e) {
   function identificar(e) {
     cid = e.message.chat.id;
     if (e.message.text) {
+      var t = e.message.text;
+      function slashcmd(cmd) {
+        var t_ = e.message.text + " ";
+        if (cmd.charAt(0) != "/") cmd = "/" + cmd;
+        if (t_.substr(0, cmd.length + 1) == cmd + " ") {
+          return (t_.substring(cmd.length + 1, t_.length - 1));
+        }
+        return false;
+      }
 
+      var r = t;
+      if (!(slashcmd('/start') === false) || !(slashcmd('/help') === false) || !(slashcmd('/h') === false)) {
+        r = "Type Manju gisun to get transliterations and vice versa."
+      } else {
+        if (isManchuScript(t)) {
+          r = deManchurize(t);
+        } else {
+          r = Manchurize(t);
+        }
+      }
       var mensaje = {
         "method": "sendMessage",
         "parse_mode": "HTML",
         "chat_id": cid,
-        "text": Manchurize(e.message.text)
+        "text": r
       }
     } else if (e.message.sticker) {
       var mensaje = {
