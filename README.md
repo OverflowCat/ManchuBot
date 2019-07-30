@@ -1,0 +1,1 @@
+Typ 'in [Manju gisun](https://en.wikipedia.org/wiki/Manchu_language) on Telegram.
