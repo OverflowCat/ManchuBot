@@ -62,7 +62,7 @@ function deManchurize(str) {
         tmp += "t";
       } else if (val == "ᡩ") {
         tmp += "d";
-      } else if (val == "ᠰ" || val == "ᡮ") {
+      } else if (val == "ᠰ") {    // || val == "ᡮ") {
         /*        if (prev == "ᡨ" || prev == "t") {
           tmp = tmp.substring(0, tmp.length - 1);
           tmp += "ᡮ";
@@ -71,8 +71,10 @@ function deManchurize(str) {
         }
 */
         tmp += "s";
-      } else if (val == "ᠴ") {
+      } else if (val == "ᡮ") { //ᠴ
         tmp += "c";
+      } else if (val == "ᠴ") {
+        tmp += "q";
       } else if (val == "ᠵ") {
         tmp += "j";
       } else if (val == "ᠶ") {
@@ -105,6 +107,10 @@ function deManchurize(str) {
         //}
       } else if (val == "'") {
         tmp += "\u180B";
+      } else if (val == "᠉") {
+        tmp += "."
+      } else if (val == "᠈") {
+        tmp += ","
       } else if (val == "\u180C") {
         tmp += "\\";
       } else if (val == "\u180D") {
@@ -184,7 +190,7 @@ function Manchurize(str) {
         } else {
           tmp += "ᠰ";
         }
-      } else if (val == "c") {
+      } else if (val == "c" || val == "q") {
         tmp += "ᠴ";
       } else if (val == "j") {
         tmp += "ᠵ";
@@ -213,10 +219,14 @@ function Manchurize(str) {
           tmp = tmp.substring(0, tmp.length - 1);
           tmp += "ᡯ";
         } else {
-          tmp += "z";
+          tmp += "ᡯ"; //"z" org
         }
       } else if (val == "'") {
         tmp += "\u180B";
+      } else if (val == "."||val == ":") {
+        tmp += "᠉"
+      } else if (val == ",") {
+        tmp += "᠈"
       } else if (val == "\"") {
         tmp += "\u180C";
       } else if (val == "`") {
@@ -239,9 +249,10 @@ function doPost(e) {
   var estringa = JSON.parse(e.postData.contents);
   var payload = identificar(estringa);
   var data = {
-    "method": "post",
-    "payload": payload
-  }
+      "method": "post",
+      "payload": payload
+    }
+    //var tgBotkey = "913536936:AAFuK-Wtrpv3y0ZTuItUAelyQXIYtAQ1pE8";
   var rtn = JSON.parse(UrlFetchApp.fetch("https://api.telegram.org/bot" + keys.tgbot + "/", data));
 
   //debug
@@ -255,7 +266,7 @@ function doPost(e) {
   function identificar(e) {
     cid = e.message.chat.id;
     if (e.message.text) {
-      var t = e.message.text;
+        var t = e.message.text;
       function slashcmd(cmd) {
         var t_ = e.message.text + " ";
         if (cmd.charAt(0) != "/") cmd = "/" + cmd;
@@ -264,7 +275,7 @@ function doPost(e) {
         }
         return false;
       }
-
+      
       var r = t;
       if (!(slashcmd('/start') === false) || !(slashcmd('/help') === false) || !(slashcmd('/h') === false)) {
         r = "Type Manju gisun to get transliterations and vice versa."
