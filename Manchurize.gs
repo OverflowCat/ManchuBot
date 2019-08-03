@@ -27,7 +27,7 @@ function deManchurize(str) {
         tmp += "u";
       } else if (val == "ᡡ") {
         tmp += "v";
-      } else if (val == "@") {
+      } else if (val == "@" ) {
         tmp += "ᡡ";
       } else if (val == "ᠨ") {
         tmp += "n";
@@ -150,7 +150,7 @@ function Manchurize(str) {
         tmp += "ᡠ";
       } else if (val == "v") {
         tmp += "ᡡ";
-      } else if (val == "@") {
+      } else if (val == "@" or val == "ū") {
         tmp += "ᡡ";
       } else if (val == "n") {
         tmp += "ᠨ";
@@ -162,7 +162,7 @@ function Manchurize(str) {
         tmp += "ᡦ";
       } else if (val == "x") {
         tmp += "ᡧ";
-      } else if (val == "S") {
+      } else if (val == "S" || val == "š" || val == "x") {
         tmp += "ᡧ";
       } else if (val == "k") {
         tmp += "ᡴ";
