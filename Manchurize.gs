@@ -5,7 +5,8 @@ var keys = scriptProperties.getKeys();
 function isManchuScript(str) {
   //return (/(([\u1800-\u18AA\u00AB\u00BB\u2039\u203A\?\!\u203D\u2E2E])+\s*((-*—?[0-9])+\s+)*)+$/.test(str));
   return (/[\u1800-\u18AA]/.test(str));
-  }
+}
+
 function deManchurize(str) {
   var tmp = "";
   if (str.length > 0) {
@@ -27,7 +28,7 @@ function deManchurize(str) {
         tmp += "u";
       } else if (val == "ᡡ") {
         tmp += "v";
-      } else if (val == "@" ) {
+      } else if (val == "@") {
         tmp += "ᡡ";
       } else if (val == "ᠨ") {
         tmp += "n";
@@ -62,7 +63,7 @@ function deManchurize(str) {
         tmp += "t";
       } else if (val == "ᡩ") {
         tmp += "d";
-      } else if (val == "ᠰ") {    // || val == "ᡮ") {
+      } else if (val == "ᠰ") { // || val == "ᡮ") {
         /*        if (prev == "ᡨ" || prev == "t") {
           tmp = tmp.substring(0, tmp.length - 1);
           tmp += "ᡮ";
@@ -150,7 +151,7 @@ function Manchurize(str) {
         tmp += "ᡠ";
       } else if (val == "v") {
         tmp += "ᡡ";
-      } else if (val == "@" or val == "ū") {
+      } else if (val == "@" || val == "ū") {
         tmp += "ᡡ";
       } else if (val == "n") {
         tmp += "ᠨ";
@@ -223,7 +224,7 @@ function Manchurize(str) {
         }
       } else if (val == "'") {
         tmp += "\u180B";
-      } else if (val == "."||val == ":") {
+      } else if (val == "." || val == ":") {
         tmp += "᠉"
       } else if (val == ",") {
         tmp += "᠈"
@@ -264,56 +265,81 @@ function doPost(e) {
 
 
   function identificar(e) {
-    cid = e.message.chat.id;
-    if (e.message.text) {
-        var t = e.message.text;
-      function slashcmd(cmd) {
-        var t_ = e.message.text + " ";
-        if (cmd.charAt(0) != "/") cmd = "/" + cmd;
-        if (t_.substr(0, cmd.length + 1) == cmd + " ") {
-          return (t_.substring(cmd.length + 1, t_.length - 1));
-        }
-        return false;
-      }
-      
-      var r = t;
-      if (!(slashcmd('/start') === false) || !(slashcmd('/help') === false) || !(slashcmd('/h') === false)) {
-        r = "Type Manju gisun to get transliterations and vice versa."
+    if (e.inline_query) {
+      var q = e.inline_query;
+      if (isManchuScript(q.query)) {
+        var r = deManchurize(q.query);
       } else {
-        if (isManchuScript(t)) {
-          r = deManchurize(t);
-        } else {
-          r = Manchurize(t);
+        var r = Manchurize(q.query);
+      }
+      var result = {
+        type: "article",
+        id: "5681",
+        title: "result",
+        description: r,
+        input_message_content: {
+          message_text: r,
+          parse_mode: "Markdown"
         }
-      }
+      };
       var mensaje = {
-        "method": "sendMessage",
-        "parse_mode": "HTML",
-        "chat_id": cid,
-        "text": r
-      }
-    } else if (e.message.sticker) {
-      var mensaje = {
-        "method": "sendSticker",
-        "chat_id": e.message.chat.id,
-        "sticker": 'CAADBQADCgIAAgsiPA6YQhC2cRBPowI' //e.message.sticker.file_id
-      }
-    } else if (e.message.photo) {
-      var array = e.message.photo;
-      var text = array[1];
-      var mensaje = {
-        "method": "sendPhoto",
-        "chat_id": e.message.chat.id,
-        "photo": text.file_id
-      }
+        method: "answerInlineQuery",
+        inline_query_id: e.id,
+        results: JSON.stringify([result])
+      };
+
     } else {
-      var mensaje = {
-        "method": "sendMessage",
-        "chat_id": e.message.chat.id,
-        "text": "Send me Manchu gisun plz - -"
+      cid = e.message.chat.id;
+      if (e.message.text) {
+        var t = e.message.text;
+
+        function slashcmd(cmd) {
+          var t_ = e.message.text + " ";
+          if (cmd.charAt(0) != "/") cmd = "/" + cmd;
+          if (t_.substr(0, cmd.length + 1) == cmd + " ") {
+            return (t_.substring(cmd.length + 1, t_.length - 1));
+          }
+          return false;
+        }
+
+        var r = t;
+        if (!(slashcmd('/start') === false) || !(slashcmd('/help') === false) || !(slashcmd('/h') === false)) {
+          r = "Type Manju gisun to get transliterations and vice versa."
+        } else {
+          if (isManchuScript(t)) {
+            r = deManchurize(t);
+          } else {
+            r = Manchurize(t);
+          }
+        }
+        var mensaje = {
+          "method": "sendMessage",
+          "parse_mode": "HTML",
+          "chat_id": cid,
+          "text": r
+        }
+      } else if (e.message.sticker) {
+        var mensaje = {
+          "method": "sendSticker",
+          "chat_id": e.message.chat.id,
+          "sticker": 'CAADBQADCgIAAgsiPA6YQhC2cRBPowI' //e.message.sticker.file_id
+        }
+      } else if (e.message.photo) {
+        var array = e.message.photo;
+        var text = array[1];
+        var mensaje = {
+          "method": "sendPhoto",
+          "chat_id": e.message.chat.id,
+          "photo": text.file_id
+        }
+      } else {
+        var mensaje = {
+          "method": "sendMessage",
+          "chat_id": e.message.chat.id,
+          "text": "Send me Manchu gisun plz - -"
+        }
       }
     }
-
     return mensaje;
   }
 }
