@@ -265,16 +265,17 @@ function doPost(e) {
 
 
   function identificar(e) {
-    if (e.inline_query) {
+    if (e.message.inline_query || true) {
       var q = e.inline_query;
       if (isManchuScript(q.query)) {
         var r = deManchurize(q.query);
       } else {
         var r = Manchurize(q.query);
       }
+      
       var result = {
         type: "article",
-        id: "5681",
+        id: "first",
         title: "result",
         description: r,
         input_message_content: {
@@ -287,7 +288,11 @@ function doPost(e) {
         inline_query_id: e.id,
         results: JSON.stringify([result])
       };
+      return mensaje;
+// https://api.telegram.org/bot123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11/getMe
+// https://api.telegram.org/bot449123456:AAHSAnSGDm8PW2Z-1ZiwdVDmgv7sM3NMTxg/sendMessage?chat_id=311911234&text=Hi+Everyone
 
+  //var rtn = JSON.parse(UrlFetchApp.fetch("https://api.telegram.org/bot" + keys.tgbot + "/" + "answerInlineQuery?inline_query_id=" + e.id + "&results="));
     } else {
       cid = e.message.chat.id;
       if (e.message.text) {
@@ -306,12 +311,15 @@ function doPost(e) {
         if (!(slashcmd('/start') === false) || !(slashcmd('/help') === false) || !(slashcmd('/h') === false)) {
           r = "Type Manju gisun to get transliterations and vice versa."
         } else {
+
           if (isManchuScript(t)) {
             r = deManchurize(t);
           } else {
             r = Manchurize(t);
+            if (t.toLowerCase().indexOf("huaming") != -1) r = "Do not try to tease the bot🙃";
           }
         }
+        if (r == t) r.length >= 14? r = "Do not try to tease the bot🙃": r = "No text changed.";
         var mensaje = {
           "method": "sendMessage",
           "parse_mode": "HTML",
